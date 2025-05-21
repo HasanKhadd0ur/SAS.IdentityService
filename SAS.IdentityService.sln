@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source Code", "Source Code", "{DEF2FFF2-76B2-48EF-B13B-542C1D5A45EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAS.IdentityService.API", "src\SAS.IdentityService.API\SAS.IdentityService.API.csproj", "{06D2D202-F1A7-4C6B-ABF0-6DB88A1845C9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{64EC1387-5C4F-4C9B-A2A4-9391697B2CD8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{06D2D202-F1A7-4C6B-ABF0-6DB88A1845C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06D2D202-F1A7-4C6B-ABF0-6DB88A1845C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06D2D202-F1A7-4C6B-ABF0-6DB88A1845C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06D2D202-F1A7-4C6B-ABF0-6DB88A1845C9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{06D2D202-F1A7-4C6B-ABF0-6DB88A1845C9} = {64EC1387-5C4F-4C9B-A2A4-9391697B2CD8}
+		{64EC1387-5C4F-4C9B-A2A4-9391697B2CD8} = {DEF2FFF2-76B2-48EF-B13B-542C1D5A45EC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B002D836-64C7-4AB2-A784-927FB653EC1A}
+	EndGlobalSection
+EndGlobal
