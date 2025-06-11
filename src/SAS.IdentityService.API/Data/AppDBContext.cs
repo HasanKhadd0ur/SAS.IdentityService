@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using SAS.IdentityService.API.Entities;
 
 namespace SAS.IdentityService.API.Data;
 
@@ -11,5 +12,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser,IdentityRole<Guid>
 
     }
 
+
+    public DbSet<ApplicationUser> Users { get; set; }
     public DbSet<TokenInfo> TokenInfos { get; set; }
 }
