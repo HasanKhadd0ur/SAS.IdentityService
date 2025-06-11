@@ -1,4 +1,6 @@
-﻿namespace SAS.IdentityService.API.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SAS.IdentityService.API.Models;
 
 public class LoginModel
 {
