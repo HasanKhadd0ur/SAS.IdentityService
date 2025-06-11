@@ -1,4 +1,6 @@
 ﻿
+using Ardalis.Result;
+
 namespace SAS.IdentityService.API.Abstraction
 {
     public interface IUserRoleService

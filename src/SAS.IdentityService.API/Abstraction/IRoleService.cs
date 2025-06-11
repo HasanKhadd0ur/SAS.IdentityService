@@ -1,4 +1,5 @@
 ﻿
+using Ardalis.Result;
 using SAS.IdentityService.API.Entities;
 
 namespace SAS.IdentityService.API.Abstraction
