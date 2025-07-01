@@ -5,6 +5,7 @@ using SAS.IdentityService.API.Entities;
 using SAS.IdentityService.API.Models;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SAS.IdentityService.API.Services
@@ -122,5 +123,82 @@ namespace SAS.IdentityService.API.Services
 
             return Result.Success();
         }
+        public async Task<Result<AuthenticationResult>> ExternalLoginAsync()
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+                return Result.Error("Failed to load external login info.");
+
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(
+                info.LoginProvider,
+                info.ProviderKey,
+                isPersistent: false,
+                bypassTwoFactor: true);
+
+            ApplicationUser user;
+
+            if (signInResult.Succeeded)
+            {
+                user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            }
+            else
+            {
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                if (string.IsNullOrWhiteSpace(email))
+                    return Result.Error("Email not found from external provider.");
+
+                user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    user = new ApplicationUser
+                    {
+                        UserName = email,
+                        Email = email
+                    };
+
+                    var createResult = await _userManager.CreateAsync(user);
+                    if (!createResult.Succeeded)
+                    {
+                        var errors = createResult.Errors
+                            .Select(e => new ValidationError { Identifier = e.Code, ErrorMessage = e.Description })
+                            .ToList();
+                        return Result.Invalid(errors);
+                    }
+                }
+
+                var loginResult = await _userManager.AddLoginAsync(user, info);
+                if (!loginResult.Succeeded)
+                {
+                    var errors = loginResult.Errors
+                        .Select(e => new ValidationError { Identifier = e.Code, ErrorMessage = e.Description })
+                        .ToList();
+                    return Result.Invalid(errors);
+                }
+
+                await _signInManager.SignInAsync(user, isPersistent: false);
+            }
+
+            // Generate JWT and refresh token
+            var token = _jwtTokenGenerator.GenerateToken(user);
+            var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user);
+
+            var authResult = new AuthenticationResult
+            {
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Roles = await _userManager.GetRolesAsync(user).ContinueWith(t => t.Result.Select(r => new Role { Name = r }).ToList()),
+                Token = token,
+                TokenInfo = new TokenInfo
+                {
+                    Username = user.UserName,
+                    RefreshToken = refreshToken,
+                    ExpiredAt = DateTime.UtcNow.AddDays(7)
+                }
+            };
+
+            return Result.Success(authResult);
+        }
+
     }
 }

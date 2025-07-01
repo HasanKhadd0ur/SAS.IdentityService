@@ -11,6 +11,7 @@ namespace SAS.IdentityService.API.Abstraction
         public Task<Result<AuthenticationResult>> Register(RegisterRequest request);
         Task<Result<string>> RefreshTokenAsync(string refreshToken);
         Task<Result> UpdatePasswordAsync(Guid userId, string currentPassword, string newPassword);
+        Task<Result<AuthenticationResult>> ExternalLoginAsync();
 
 
 
