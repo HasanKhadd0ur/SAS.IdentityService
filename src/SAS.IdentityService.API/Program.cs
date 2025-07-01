@@ -3,6 +3,11 @@ using SAS.EventsService.Infrastructure.Services.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
 var configuration = builder.Configuration;
 
 
