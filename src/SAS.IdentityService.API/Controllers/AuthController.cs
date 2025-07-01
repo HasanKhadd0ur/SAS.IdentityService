@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SAS.IdentityService.API.Abstraction;
-using SAS.IdentityService.API.Entities;
-using SAS.IdentityService.API.Models;
+using SAS.IdentityService.ApplicationCore.Contracts.Authentication;
+using SAS.IdentityService.ApplicationCore.DTOs.Requests;
+using SAS.IdentityService.ApplicationCore.Entities;
 using System.Security.Claims;
 
 namespace SAS.IdentityService.API.Controllers
@@ -12,12 +12,9 @@ namespace SAS.IdentityService.API.Controllers
     {
         private readonly IAuthenticationService _authService;
 
-        private readonly SignInManager<ApplicationUser> _signInManager;
-
-        public AuthController(IAuthenticationService authService, SignInManager<ApplicationUser> signInManager)
+        public AuthController(IAuthenticationService authService)
         {
             _authService = authService;
-            _signInManager = signInManager;
         }
 
         [HttpPost("login")]
@@ -56,10 +53,10 @@ namespace SAS.IdentityService.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("external-login")]
-        public IActionResult ExternalLogin(string provider, string returnUrl = "/")
+        public async Task<IActionResult> ExternalLogin(string provider, string returnUrl = "/")
         {
             var redirectUrl = Url.Action("ExternalLoginCallback", "Auth", new { returnUrl });
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            var properties = await _authService.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }
 

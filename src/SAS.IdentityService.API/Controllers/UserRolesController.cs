@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SAS.IdentityService.API.Abstraction;
+using SAS.IdentityService.ApplicationCore.Contracts.Users;
 
 namespace SAS.IdentityService.API.Controllers
 {
