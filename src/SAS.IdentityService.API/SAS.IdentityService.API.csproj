@@ -20,4 +20,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SAS.IdentityService.ApplicationCore\SAS.IdentityService.ApplicationCore.csproj" />
+    <ProjectReference Include="..\SAS.IdentityService.Infrastructure\SAS.IdentityService.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
