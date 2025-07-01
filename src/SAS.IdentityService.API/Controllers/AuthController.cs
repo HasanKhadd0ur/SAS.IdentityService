@@ -1,14 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-<<<<<<< HEAD
-using SAS.IdentityService.API.Abstraction;
-using SAS.IdentityService.API.Models;
-=======
 using SAS.IdentityService.ApplicationCore.Contracts.Authentication;
 using SAS.IdentityService.ApplicationCore.DTOs.Requests;
-using SAS.IdentityService.ApplicationCore.Entities;
->>>>>>> 044c264 (Fix Controllers)
 using System.Security.Claims;
 
 namespace SAS.IdentityService.API.Controllers
@@ -55,8 +48,7 @@ namespace SAS.IdentityService.API.Controllers
             var result = await _authService.UpdatePasswordAsync(userId, request.CurrentPassword, request.NewPassword);
             return HandleResult(result);
         }
-<<<<<<< HEAD
-=======
+
 
         [AllowAnonymous]
         [HttpGet("external-login")]
@@ -83,6 +75,6 @@ namespace SAS.IdentityService.API.Controllers
             return BadRequest(result.Errors);
         }
 
->>>>>>> 044c264 (Fix Controllers)
+
     }
 }
