@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SAS.IdentityService.API.Abstraction;
-using SAS.IdentityService.API.Models;
+using SAS.IdentityService.ApplicationCore.Contracts.Authentication;
+using SAS.IdentityService.ApplicationCore.DTOs.Requests;
 using System.Security.Claims;
 
 namespace SAS.IdentityService.API.Controllers
@@ -48,5 +48,33 @@ namespace SAS.IdentityService.API.Controllers
             var result = await _authService.UpdatePasswordAsync(userId, request.CurrentPassword, request.NewPassword);
             return HandleResult(result);
         }
+
+
+        [AllowAnonymous]
+        [HttpGet("external-login")]
+        public async Task<IActionResult> ExternalLogin(string provider, string returnUrl = "/")
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Auth", new { returnUrl });
+            var properties = await _authService.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("signin-google")]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = "/")
+        {
+            var result = await _authService.ExternalLoginAsync();
+
+            if (result.IsSuccess)
+            {
+                // You can redirect with token if you want to pass it to frontend
+                // OR just return JSON if you're building a SPA
+                return Ok(result.Value);
+            }
+
+            return BadRequest(result.Errors);
+        }
+
+
     }
 }
