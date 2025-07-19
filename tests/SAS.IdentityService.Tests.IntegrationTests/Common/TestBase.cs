@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Moq;
 using SAS.IdentityService.ApplicationCore.Contracts.Tokens;
 using SAS.IdentityService.ApplicationCore.Entities;
 using SAS.IdentityService.Infrastructure.Persistence.DataContext;
@@ -18,6 +19,19 @@ namespace SAS.IdentityService.Tests.IntegrationTests.Base
         protected readonly SignInManager<ApplicationUser> _signInManager;
         protected readonly ITokenService _tokenService;
 
+        public static UserManager<ApplicationUser> GetMockedUserManager()
+        {
+            var store = new Mock<IUserStore<ApplicationUser>>();
+            var mgr = new Mock<UserManager<ApplicationUser>>(
+                store.Object, null, null, null, null, null, null, null, null);
+
+            // Mock GetRolesAsync to return predefined roles
+            mgr.Setup(x => x.GetRolesAsync(It.IsAny<ApplicationUser>()))
+               .ReturnsAsync(new List<string> { "Admin", "User" });
+
+            return mgr.Object;
+        }
+
         protected TestBase()
         {
             var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -29,7 +43,7 @@ namespace SAS.IdentityService.Tests.IntegrationTests.Base
             var store = new UserStore<ApplicationUser, IdentityRole<Guid>, AppDbContext, Guid>(_dbContext);
             _userManager = IdentityMocks.CreateUserManager(store);
             _signInManager = IdentityMocks.CreateSignInManager(_userManager);
-            _tokenService = new TokenService(Options.Create(TestJwtSettings.Get()));
+            _tokenService = new TokenService(Options.Create(TestJwtSettings.Get()),_userManager);
         }
 
         protected AuthenticationService CreateAuthenticationService()

@@ -180,7 +180,7 @@ namespace SAS.IdentityService.Infrastructure.Services.Authentication
             }
 
             // Generate JWT and refresh token
-            var token = _jwtTokenGenerator.GenerateToken(user);
+            var token = await _jwtTokenGenerator.GenerateToken(user);
             var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user);
 
             var authResult = new AuthenticationResponse

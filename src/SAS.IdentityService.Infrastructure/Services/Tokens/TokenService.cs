@@ -18,9 +18,10 @@ namespace SAS.IdentityService.Infrastructure.Services.Tokens
         private readonly JwtSetting _jwtSetting;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public TokenService(IOptions<JwtSetting> jwtOptions)
+        public TokenService(IOptions<JwtSetting> jwtOptions, UserManager<ApplicationUser> userManager)
         {
             _jwtSetting = jwtOptions.Value;
+            _userManager = userManager;
         }
 
         public Task<string> GenerateRefreshTokenAsync(ApplicationUser user)
