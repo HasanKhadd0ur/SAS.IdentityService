@@ -19,6 +19,7 @@ namespace SAS.IdentityService.Infrastructure.Services.Tokens
 
         public void Configure(JwtBearerOptions options)
         {
+            var rsaKey = RsaKeyUtils.LoadPrivateKey(_jwtSettings.PrivateKey);
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -27,8 +28,7 @@ namespace SAS.IdentityService.Infrastructure.Services.Tokens
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = _jwtSettings.Issuer,
                 ValidAudience = _jwtSettings.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_jwtSettings.Secret)),
+                IssuerSigningKey = rsaKey,
             };
         }
     }

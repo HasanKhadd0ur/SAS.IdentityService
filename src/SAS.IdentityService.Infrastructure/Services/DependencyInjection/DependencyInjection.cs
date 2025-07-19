@@ -47,10 +47,13 @@ namespace SAS.EventsService.Infrastructure.Services.DependencyInjection
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
             })
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
+
+                var rsaKey = RsaKeyUtils.LoadPrivateKey(jwtSettings.PrivateKey); 
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -58,7 +61,7 @@ namespace SAS.EventsService.Infrastructure.Services.DependencyInjection
                     ValidateAudience = true,
                     ValidAudience = jwtSettings.Audience,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+                    IssuerSigningKey = rsaKey,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
