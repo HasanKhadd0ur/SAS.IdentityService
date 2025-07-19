@@ -5,7 +5,7 @@ namespace SAS.IdentityService.ApplicationCore.Contracts.Tokens
 {
     public interface ITokenService
     {
-        string GenerateToken(ApplicationUser user);
+        Task<string> GenerateToken(ApplicationUser user);
         Task<string> GenerateRefreshTokenAsync(ApplicationUser user);
         Task<Result<string>> ValidateAndRenewTokenAsync(string refreshToken);
 

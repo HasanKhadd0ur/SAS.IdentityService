@@ -40,7 +40,7 @@ namespace SAS.IdentityService.Infrastructure.Services.Authentication
             if (!signInResult.Succeeded)
                 return Result.Invalid(new ValidationError { Identifier = "Password", ErrorMessage = "Invalid credentials." });
 
-            var token = _jwtTokenGenerator.GenerateToken(user);
+            var token = await _jwtTokenGenerator.GenerateToken(user);
             var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user);
 
             var authResult = new AuthenticationResponse
@@ -80,7 +80,7 @@ namespace SAS.IdentityService.Infrastructure.Services.Authentication
                 return Result.Invalid(errors);
             }
 
-            var token = _jwtTokenGenerator.GenerateToken(user);
+            var token = await _jwtTokenGenerator.GenerateToken(user);
             var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user);
 
             var authResult = new AuthenticationResponse
@@ -180,7 +180,7 @@ namespace SAS.IdentityService.Infrastructure.Services.Authentication
             }
 
             // Generate JWT and refresh token
-            var token = _jwtTokenGenerator.GenerateToken(user);
+            var token = await _jwtTokenGenerator.GenerateToken(user);
             var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user);
 
             var authResult = new AuthenticationResponse

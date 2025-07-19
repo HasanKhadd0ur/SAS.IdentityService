@@ -67,7 +67,7 @@ namespace SAS.IdentityService.Tests.UnitTests.Services
 
             _userManagerMock.Setup(x => x.FindByNameAsync("test")).ReturnsAsync(user);
             _signinManagerMock.Setup(x => x.CheckPasswordSignInAsync(user, "pass", false)).ReturnsAsync(SignInResult.Success);
-            _tokenServiceMock.Setup(x => x.GenerateToken(user)).Returns("access-token");
+            _tokenServiceMock.Setup(x => x.GenerateToken(user)).Returns(Task.FromResult("access-token"));
             _tokenServiceMock.Setup(x => x.GenerateRefreshTokenAsync(user)).ReturnsAsync("refresh-token");
             _userManagerMock.Setup(x => x.GetRolesAsync(user)).ReturnsAsync(new List<string> { "User" });
 
@@ -102,7 +102,7 @@ namespace SAS.IdentityService.Tests.UnitTests.Services
             _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerRequest.Password))
                 .ReturnsAsync(IdentityResult.Success);
 
-            _tokenServiceMock.Setup(x => x.GenerateToken(It.IsAny<ApplicationUser>())).Returns("access-token");
+            _tokenServiceMock.Setup(x => x.GenerateToken(It.IsAny<ApplicationUser>())).ReturnsAsync("access-token");
             _tokenServiceMock.Setup(x => x.GenerateRefreshTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync("refresh-token");
             _userManagerMock.Setup(x => x.GetRolesAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(new List<string>());
 
@@ -235,7 +235,7 @@ namespace SAS.IdentityService.Tests.UnitTests.Services
 
             _userManagerMock.Setup(x => x.FindByLoginAsync("provider", "providerKey")).ReturnsAsync(user);
 
-            _tokenServiceMock.Setup(x => x.GenerateToken(user)).Returns("access-token");
+            _tokenServiceMock.Setup(x => x.GenerateToken(user)).ReturnsAsync("access-token");
             _tokenServiceMock.Setup(x => x.GenerateRefreshTokenAsync(user)).ReturnsAsync("refresh-token");
             _userManagerMock.Setup(x => x.GetRolesAsync(user)).ReturnsAsync(new List<string>());
 
