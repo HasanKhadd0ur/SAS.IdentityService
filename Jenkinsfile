@@ -55,7 +55,8 @@ pipeline {
 
         stage('Run with Docker Compose') {
             steps {
-               bat "docker-compose -f ${env.COMPOSE_FILE} up -d --build"
+                  bat "docker-compose -f ${env.COMPOSE_FILE} down --remove-orphans"
+
             }
         }
     }
