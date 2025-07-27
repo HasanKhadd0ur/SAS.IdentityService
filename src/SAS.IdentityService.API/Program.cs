@@ -1,6 +1,11 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SAS.EventsService.Infrastructure.Persistence.DependencyInjection;
 using SAS.EventsService.Infrastructure.Services.DependencyInjection;
+using SAS.IdentityService.Infrastructure.Services.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +22,8 @@ builder.Services.AddInfrastructureSevices(configuration);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "SAS.Identity.Api", Version = "v1" });
@@ -51,10 +58,23 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "SAS.Identity.Api v1");
+        c.OAuthUsePkce(); 
+        c.OAuthClientId("swagger-ui"); 
+        c.OAuthAppName("Swagger UI for SAS API");
+        c.OAuthScopeSeparator(" ");
+        c.OAuthUseBasicAuthenticationWithAccessCodeGrant();
+    });
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); 
+
+app.UseRouting();
+
+app.UseCookiePolicy();
 
 app.UseAuthentication();
 app.UseAuthorization();

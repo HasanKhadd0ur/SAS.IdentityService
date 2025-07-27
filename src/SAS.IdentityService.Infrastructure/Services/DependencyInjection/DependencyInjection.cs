@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -38,21 +39,41 @@ namespace SAS.EventsService.Infrastructure.Services.DependencyInjection
             services.Configure<JwtSetting>(jwtSettingsSection);
             var jwtSettings = jwtSettingsSection.Get<JwtSetting>();
 
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;
+            });
 
             services.AddAuthentication(options =>
             {
-                // Set JWT as the default for APIs
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
             })
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                
+
+                options.LoginPath = "/api/auth/login";
+                options.AccessDeniedPath = "/api/auth/access-denied";
+                options.SlidingExpiration = true;
+            })
+            .AddGoogle("Google", options =>
+            {
+                options.ClientId = configuration["Authentication:Google:ClientId"];
+                options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+                options.CallbackPath = "/api/auth/signin-google";
+                options.SaveTokens = true;
+            })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
 
-                var rsaKey = RsaKeyUtils.LoadPrivateKey(jwtSettings.PrivateKey); 
+                var rsaKey = RsaKeyUtils.LoadPrivateKey(jwtSettings.PrivateKey);
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -65,24 +86,6 @@ namespace SAS.EventsService.Infrastructure.Services.DependencyInjection
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
-            })
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-            {
-                options.LoginPath = "/api/auth/login";
-                options.AccessDeniedPath = "/api/auth/access-denied";
-                options.SlidingExpiration = true;
-            })
-            .AddGoogle("Google", options =>
-            {
-                options.ClientId = configuration["Authentication:Google:ClientId"];
-                options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
-                options.CallbackPath = "/api/auth/signin-google";
-                options.SaveTokens = true;
-            });
-            
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.MinimumSameSitePolicy = SameSiteMode.Lax;
             });
 
             // Add services
