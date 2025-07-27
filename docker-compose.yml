@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  identityservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sas.identityservice
+    container_name: identityservice
+    ports:
+      - "7158:8080"  # map host port 7158 to container port 80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=IdentityDb;User=sa;Password=Your_password123;
+    depends_on:
+      - sqlserver
+    networks:
+      - sas-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Your_password123
+      - MSSQL_PID=Developer
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - sas-network
+
+volumes:
+  sqlserver_data:
+
+networks:
+  sas-network:
+    driver: bridge
