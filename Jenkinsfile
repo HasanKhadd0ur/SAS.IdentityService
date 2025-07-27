@@ -18,24 +18,42 @@ pipeline {
 
         stage('Restore Dependencies') {
             steps {
-               bat "dotnet restore ${env.PROJECT_PATH}"
+                bat "dotnet restore ${env.PROJECT_PATH}"
             }
         }
 
         stage('Build') {
             steps {
-               bat "dotnet build ${env.PROJECT_PATH} -c ${env.BUILD_CONFIGURATION} --no-restore"
+                bat "dotnet build ${env.PROJECT_PATH} -c ${env.BUILD_CONFIGURATION} --no-restore"
             }
         }
 
-        stage('Test') {
+        stage('Unit Tests') {
             steps {
-                // Optional: run if test project exists
                 script {
-                    if (fileExists('src/SAS.IdentityService.Tests/SAS.IdentityService.Tests.csproj')) {
-                        bat "dotnet test src/SAS.IdentityService.Tests/SAS.IdentityService.Tests.csproj --no-restore --no-build"
+                    if (fileExists('tests/SAS.IdentityService.Tests.UnitTests/SAS.IdentityService.Tests.UnitTests.csproj')) {
+                        bat 'dotnet test tests/SAS.IdentityService.Tests.UnitTests/SAS.IdentityService.Tests.UnitTests.csproj --no-restore --no-build'
                     } else {
-                        echo 'No test project found — skipping tests.'
+                        echo 'No unit test project found — skipping unit tests.'
+                    }
+                }
+            }
+        }
+
+        stage('Integration Tests') {
+            steps {
+                script {
+                    if (fileExists('tests/SAS.IdentityService.Tests.IntegrationTests/SAS.IdentityService.Tests.IntegrationTests.csproj')) {
+                        // If integration tests require your app running, start Docker Compose first:
+                        bat "docker-compose -f ${env.COMPOSE_FILE} up -d --build"
+
+                        // Run integration tests
+                        bat 'dotnet test tests/SAS.IdentityService.Tests.IntegrationTests/SAS.IdentityService.Tests.IntegrationTests.csproj --no-restore --no-build'
+
+                        // Tear down containers after tests
+                        bat "docker-compose -f ${env.COMPOSE_FILE} down"
+                    } else {
+                        echo 'No integration test project found — skipping integration tests.'
                     }
                 }
             }
@@ -43,21 +61,20 @@ pipeline {
 
         stage('Publish') {
             steps {
-               bat "dotnet publish ${env.PROJECT_PATH} -c ${env.BUILD_CONFIGURATION} -o publish /p:UseAppHost=false"
+                bat "dotnet publish ${env.PROJECT_PATH} -c ${env.BUILD_CONFIGURATION} -o publish /p:UseAppHost=false"
             }
         }
 
         stage('Build Docker Image') {
             steps {
-               bat "docker build -t ${env.IMAGE_NAME} ."
+                bat "docker build -t ${env.IMAGE_NAME} ."
             }
         }
 
         stage('Run with Docker Compose') {
             steps {
-                  bat "docker-compose -f ${env.COMPOSE_FILE} down --remove-orphans"
-                  bat "docker-compose -f ${env.COMPOSE_FILE} up -d --build"
-      
+                // bat "docker-compose -f ${env.COMPOSE_FILE} down --remove-orphans"
+                // bat "docker-compose -f ${env.COMPOSE_FILE} up -d --build"
             }
         }
     }
@@ -65,7 +82,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-           bat "docker-compose down -v"
+            bat "docker-compose down -v"
         }
     }
 }
