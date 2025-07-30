@@ -1,63 +1,71 @@
 # SAS.IdentityService
 
-**SAS.IdentityService** is a microservice responsible for authentication and user management within the **Situational Awareness System (SAS)**. It provides JWT-based authentication, role-based authorization, and user identity management using ASP.NET Core Identity.
+**SAS.IdentityService** is a microservice that handles authentication and user identity management within the **Situational Awareness System (SAS)**. It provides secure JWT-based login, role-based access control, and user registration using **ASP.NET Core Identity** and **.NET 9**.
 
 ---
 
 ## 📁 Project Structure
 
-```bash
+```
 SAS.IdentityService/
 │
-├── .github/                      # GitHub configuration files
+├── .github/                          # GitHub workflows and issue templates
 ├── src/
-│   └── SAS.IdentityService.API/
-│       ├── Abstraction/          # Service interfaces and result models
-│       ├── Controllers/          # API endpoints (Auth, User, Role)
-│       ├── Data/                 # DbContext and EF configurations
-│       ├── Entities/             # Identity-related entities (User, Role, TokenInfo)
-│       ├── Migrations/           # EF Core migration history
-│       ├── Models/               # Request/response DTOs
-│       ├── Services/             # Service implementations
-│       ├── Program.cs            # Startup and configuration
-│       └── ...                   # Other build and output folders
-├── SAS.IdentityService.sln      # Solution file
+│   ├── SAS.IdentityService.API/      # API host project
+│   │   ├── Controllers/              # Auth, User, Role endpoints
+│   │   ├── Data/                     # Identity DbContext, configuration
+│   │   ├── Entities/                 # Identity domain models (User, Role)
+│   │   ├── Models/                   # DTOs (requests/responses)
+│   │   ├── Services/                 # Authentication and user management logic
+│   │   └── Program.cs                # Entry point, middleware, DI setup
+│   │
+│   ├── SAS.IdentityService.ApplicationCore/  # Domain logic and contracts
+│   │   ├── Abstractions/            # Interfaces, service contracts
+│   │   └── GlobalUsings.g.cs
+│   │
+│   └── SAS.IdentityService.Infrastructure/   # EF Core persistence, services
+│       ├── Persistence/             # Db access layer
+│       └── GlobalUsings.g.cs
+│
+├── SAS.IdentityService.sln          # Solution file
 ├── .gitignore
-└── .gitattributes
-````
+└── README.md
+```
 
 ---
 
 ## 🚀 Features
 
-* ✅ **JWT Authentication & Token Refresh**
-* 🔐 **Role-Based Authorization**
-* 👤 **User and Role Management**
-* 📦 Built using ASP.NET Core 9 and Entity Framework Core
-* 📊 Integration-ready for the SAS event platform
+* 🔐 JWT Bearer Authentication + Refresh Tokens
+* 👥 Role-based Access Control
+* 👤 User Creation, Update, Password Management
+* 🧱 Modular architecture using ASP.NET Core 9
+* 🗃️ EF Core for data persistence
+* 🤝 Integrates with SAS platform (event service, notification service)
 
 ---
 
 ## 🛠️ Technologies
 
-* [.NET 9](https://dotnet.microsoft.com)
+* [.NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 * ASP.NET Core Identity
 * Entity Framework Core
-* Ardalis.Result (for functional-style result handling)
+* Ardalis.Result (for clean error and success handling)
+* SQL Server (default, but adaptable)
 
 ---
 
-## 🧪 Endpoints Overview
+## 📡 API Endpoints
 
-| HTTP Verb | Endpoint                    | Description            |
-| --------- | --------------------------- | ---------------------- |
-| `POST`    | `/api/Auth/login`           | Login with credentials |
-| `POST`    | `/api/Auth/register`        | Register a new user    |
-| `POST`    | `/api/Auth/refresh-token`   | Refresh JWT            |
-| `GET`     | `/api/Users`                | Get all users          |
-| `GET`     | `/api/Users/{id}`           | Get user by ID         |
-| `POST`    | `/api/UserRoles/assign`     | Assign roles to user   |
-| `POST`    | `/api/Auth/update-password` | Update user password   |
+| Verb   | Endpoint                    | Description                   |
+| ------ | --------------------------- | ----------------------------- |
+| `POST` | `/api/Auth/login`           | Authenticate user credentials |
+| `POST` | `/api/Auth/register`        | Register a new user           |
+| `POST` | `/api/Auth/refresh-token`   | Issue a new JWT               |
+| `POST` | `/api/Auth/update-password` | Update user password          |
+| `GET`  | `/api/Users`                | List all users                |
+| `GET`  | `/api/Users/{id}`           | Retrieve user by ID           |
+| `POST` | `/api/UserRoles/assign`     | Assign roles to users         |
 
 ---
 
@@ -65,20 +73,21 @@ SAS.IdentityService/
 
 ### Prerequisites
 
-* [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
-* SQL Server (or SQLite, PostgreSQL)
-* EF CLI: `dotnet tool install --global dotnet-ef`
+* [.NET 9 SDK](https://dotnet.microsoft.com)
+* SQL Server (or compatible database)
+* EF Core CLI: `dotnet tool install --global dotnet-ef`
 
-### Setup
+### Setup Instructions
 
 ```bash
-git clone https://github.com/your-org/SAS.IdentityService.git
+# Clone the repo
+git clone https://github.com/hasankhadd0ur/SAS.IdentityService.git
 cd SAS.IdentityService/src/SAS.IdentityService.API
 
-# Restore packages
+# Restore dependencies
 dotnet restore
 
-# Apply EF migrations
+# Run database migrations
 dotnet ef database update
 
 # Run the service
@@ -87,27 +96,32 @@ dotnet run
 
 ---
 
-## 🔒 Authentication
+## 🔐 Authentication
 
-* Uses JWT Bearer tokens for secure API access.
-* A `refresh token` system is implemented for renewing JWTs securely.
-
----
-## 🧑‍💻 Contributing
-
-Feel free to fork the repo and submit pull requests. Issues and feature requests are welcome.
+* Uses **JWT Bearer Tokens** for stateless authentication.
+* Supports **Refresh Tokens** for extending sessions.
+* Passwords hashed securely via ASP.NET Core Identity.
 
 ---
 
-## 📄 License
+## 🧪 Testing
 
-This project is licensed under the MIT License.
+> ⚠️ Add test projects (unit/integration) under `tests/` folder in future updates.
 
 ---
 
-## 📬 Contact
+## 🤝 Contributing
 
-For inquiries, reach out to the project maintainer or the SAS core development team.
+We welcome issues and pull requests. Please follow the standard GitHub workflow.
 
-```
+---
 
+## 📜 License
+
+Licensed under the **MIT License**.
+
+---
+
+## 🏢 Project Maintainers
+
+For issues, reach out to the **SAS Core Development Team**.
